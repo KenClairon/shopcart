@@ -58,7 +58,6 @@
             'photo2'        => 'produc8B.jpg',
         )
     );
-
 $_SESSION['totalAmount'] = 0;
 
 if(isset($_POST['btnUpdate'])){
