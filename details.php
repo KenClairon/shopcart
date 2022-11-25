@@ -3,7 +3,7 @@
     $arrProducts = array(
         array(
             'name'          => "Cool Tshirt plane",
-            'description'   => "lorem is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book..",
+            'description'   => "lorem is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took galley of type and scrambled it to make a type specimen book..",
             'price'         => "180",
             'photo1'        => 'produc1A.jpg',
             'photo2'        => 'produc1B.jpg',
