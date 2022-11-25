@@ -58,7 +58,6 @@
             'photo2'        => 'produc8B.jpg',
         )
     );
-
 if(isset($_POST['btnRemove'])){
         unset($_SESSION['cartItems'][$_POST['hdnKey']][$_POST['hdnSize']]);
 
