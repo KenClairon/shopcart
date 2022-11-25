@@ -27,7 +27,6 @@
                 </div>
             </div>
         	<hr>
-
         	<h4>Product Successfully Added to the Cart, What do you want to do next ?</h4>
             <a href="cart.php" class="btn btn-dark btn-lg">
         		<i class="fas fa-shopping-cart"></i>&nbsp; View Cart </a>
