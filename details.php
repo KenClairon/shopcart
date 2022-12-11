@@ -1,149 +1,123 @@
-<?php 
-   session_start(); 
-    $arrProducts = array(
-        array(
-            'name'          => "Cool Tshirt plane",
-            'description'   => "lorem is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took galley of type and scrambled it to make a type specimen book..",
-            'price'         => "180",
-            'photo1'        => 'produc1A.jpg',
-            'photo2'        => 'produc1B.jpg',
-        ),
-        array(
-            'name'          => " Stripe cool shirt",
-            'description'   => "lorem is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book..",
-            'price'         => "250",
-            'photo1'        => 'produc2A.jpg',
-            'photo2'        => 'produc2B.jpg',
-        ),
-        array(
-            'name'          => "Cool Jackets ",
-            'description'   => "lorem is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book..",
-            'price'         => "900",
-            'photo1'        => 'produc3A.jpg',
-            'photo2'        => 'produc3B.jpg',
-        ),
-        array(
-            'name'          => "Polo Shirt",
-            'description'   => "lorem is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book..",
-            'price'         => "650",
-            'photo1'        => 'produc4A.jpg',
-            'photo2'        => 'produc4B.jpg',
-        ),
-        array(
-            'name'          => "Long Sleeve",
-            'description'   => "lorem is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book..",
-            'price'         => "500",
-            'photo1'        => 'produc5A.jpg',
-            'photo2'        => 'produc5B.jpg',
-        ),
-        array(
-            'name'          => "Cool Long SLeeve",
-            'description'   => "lorem is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book..",
-            'price'         => "500",
-            'photo1'        => 'produc6A.jpg',
-            'photo2'        => 'produc6B.jpg',
-        ),
-        array(
-            'name'          => "Korean Jacket",
-            'description'   => "lorem is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book..",
-            'price'         => "1000",
-            'photo1'        => 'produc7A.jpg',
-            'photo2'        => 'produc7B.jpg',
-        ),
-        array(
-            'name'          => " Cool Polo shirt ",
-            'description'   => "lorem is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book..",
-            'price'         => "150",
-            'photo1'        => 'produc8A.jpg',
-            'photo2'        => 'produc8B.jpg',
-        )
-    );
-    if(isset($_POST['btnProcess'])){
-        if (isset($_SESSION['cartItems'][$_POST['hdnKey']][$_POST['radSize']]))
-            $_SESSION['cartItems'][$_POST['hdnKey']][$_POST['radSize']] += $_POST['txtQuantity'];
-        else
-           $_SESSION['cartItems'][$_POST['hdnKey']][$_POST['radSize']] = $_POST['txtQuantity'];
-
-       $_SESSION['totalQuantity'] += $_POST['txtQuantity'];
-       header("location: confirm.php");
+<?php
+    session_start();
+          
+    if(isset($_GET['k'])){
+        $_SESSION['k'] = $_GET['k'];
     }
+            
+    require ('open-connection.php');
+    $strSql= "SELECT * FROM tbl_products WHERE id = ".$_SESSION['k'];
+    
+
+    if($rsProducts = mysqli_query($con, $strSql)){
+        if(mysqli_num_rows($rsProducts) > 0){
+           ($recProducts = mysqli_fetch_array($rsProducts));
+               mysqli_free_result($rsProducts);
+               }
+        else{
+            echo '<tr>';
+                echo '<td   No Record Found!</td>';
+            echo '</tr>';
+                }
+    }
+
+    else{
+        echo 'ERROR: Could not execute your request.';
+    }
+
+    if(isset($_POST['btnProcess'])) {
+         the stucture of our session cartItems goes like this
+         $_SESSION['cartItems'][key][size] = quantity
+         it is a two dimensional array where the first index denotes the key/number/id of the specific record (array/items)
+         followed by the size of that particular item as the second index
+         the value to be stored is nothing other than the quantity which denotes how many pieces did the buyer purchased for that product and for that specific size
+        if it is the first time that the item is placed then we will not find that array signature so we create that array structure then store the quantity in it
+         otherwise we add the new quantity from the previous quantity
+
+        if(isset($_SESSION['cartItems'][$_POST['hdnKey']][$_POST['radSize']]))
+            $_SESSION['cartItems'][$_POST['hdnKey']][$_POST['radSize']] += $_POST['txtQuantity']; // if you already purchased this item
+        else
+            $_SESSION['cartItems'][$_POST['hdnKey']][$_POST['radSize']] = $_POST['txtQuantity']; // if this is the first time you purchased the item
+
+        // then we compute the total quantity based on the new number of quantity being purchased
+        // then we force redirect to the confirm file in order to notify the user on a successfull purchase
+        $_SESSION['totalQuantity'] += $_POST['txtQuantity'];
+        header("location: confirm.php");
+    }
+
 ?>
 
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" integrity="sha512-xh6O/CkQoPOWDdYTDqeRdPCVd1SpvCA9XXcUnZS2FmJNp1coAFzvtCN9BmamE+4aHK8yyUHUSCcJHgXloTyT2A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N" crossorigin="anonymous">
-    <link rel="stylesheet" href="shopping_cart.css">
-	<title>Details</title>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.0/css/bootstrap.min.css" integrity="sha512-P5MgMn1jBN01asBgU0z60Qk4QxiXo86+wlFahKrsQf37c9cro517WzVSPPV1tDKzhku2iJ2FVgL67wG03SGnNA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta2/css/all.min.css" integrity="sha512-YWzhKL2whUzgiheMoBFwW8CKV4qpHQAEuvilg9FAn5VJUDwKZZxkJNuGM4XkWuk94WCrrwslk8yWNGmY1EduTA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="css/style.css">
+    <title>Learn IT Easy Online Shop | Shopping Cart</title>
 </head>
 <body>
-	<div class="container pt-3">
-    	<div class="row">
-                <div class="col-md-10">
-                    <h1><i class="fa fa-store"></i> Mens Wear Shop</h1>
+    <form method="post">
+        <div class="container">
+            <div class="row mt-5">
+                <div class="col-10">
+                    <h1><i class="fa fa-store"></i> Learn IT Easy Online Shop</h1>
                 </div>
-                <div class="col-md-2">
+                <div class="col-2 text-right">
                     <a href="cart.php" class="btn btn-primary">
                         <i class="fa fa-shopping-cart"></i> Cart
-                        <?php 
-                        if(isset($_SESSION['totalQuantity']))
-                            echo '<span class="badge badge-light">' . $_SESSION['totalQuantity'] . '</span>';
-                        else
-                            echo '<span class="badge badge-light">0</span>';
-                    ?>    
+                        <span class="badge badge-light">
+                            <?php echo (isset($_SESSION['totalQuantity']) ? $_SESSION['totalQuantity'] : "0"); ?>
+                        </span>
                     </a>
-                </div>
+                </div>            
             </div>
-        <hr>
-    
-    <form method="post"> 
-        <div class="row">
-            <?php if(isset($_GET['k']) && isset($arrProducts[$_GET['k']])): ?> 
-                <div class="col-md-4 col-sm-6 col-xs-12">
-                    <div class="product-grid card mb-4">
-                        <div class="product-image">
-                            <a href="details.php?k=<?php echo $key; ?>"></a>
-                                <img class="pic-1" src="img/<?php echo $arrProducts[$_GET['k']]['photo1'];?>">
-                                <img class="pic-2" src="img/<?php echo $arrProducts[$_GET['k']]['photo2'];?>">
-                            </a>
-                        </div>
-                    </div>
-                </div>
+            <hr>
 
-                <div class="col-md-8 col-sm-6 col-xs-12">
-                    <div class="product-content">
+            <div class="row">
+                    <div class="col-md-4 col-sm-6 mb-4">
+                        <div class="product-grid2 card">
+                            <div class="product-image2">
+                                <a href="">
+                                    <img class="pic-1" src="img/<?php echo $recProducts['photo1']; ?>">
+                                    <img class="pic-2" src="img/<?php echo $recProducts['photo2']; ?>">
+                                </a>                            
+                            </div>                        
+                        </div>
+                    </div>                
+                    <div class="col-md-8 col-sm-6 mb-4">                
                         <h3 class="title">
-                            <?php echo $arrProducts[$_GET['k']]['name']; ?>
-                            <span class="badge badge-dark">₱<?php echo $arrProducts[$_GET['k']]['price']; ?></span>
+                            <?php echo $recProducts['name']; ?>
+                            <span class="badge badge-dark">₱ <?php echo $recProducts['price']; ?></span>
                         </h3>
-                        <p><?php echo $arrProducts[$_GET['k']]['description']; ?></p>
+                        <p><?php echo $recProducts['description']; ?></p>                    
                         <hr>
                         <input type="hidden" name="hdnKey" value="<?php echo $_GET['k']; ?>">
-                        <h3>Select Size: </h3>
-                        <input type="radio" name="radSize" id="radXS" value="XS"> <label for="radXS" class="pr-3">XS</label>
-                        <input type="radio" name="radSize" id="radSM" value="SM"> <label for="radSM" class="pr-3">SM</label>
-                        <input type="radio" name="radSize" id="radMD" value="MD"> <label for="radMD" class="pr-3">MD</label>
-                        <input type="radio" name="radSize" id="radLG" value="LG"> <label for="radLG" class="pr-3">LG</label>
-                        <input type="radio" name="radSize" id="radXL" value="XL"> <label for="radXL" class="pr-3">XL</label>
-                        <br>
+                        <h3 class="title">Select Size:</h3>
+                        <input type="radio" name="radSize" id="radXS" value="XS" checked>
+                        <label for="radXS" class="pr-3">XS</label>
+                        <input type="radio" name="radSize" id="radSM" value="SM">
+                        <label for="radSM" class="pr-3">SM</label>
+                        <input type="radio" name="radSize" id="radMD" value="MD">
+                        <label for="radMD" class="pr-3">MD</label>
+                        <input type="radio" name="radSize" id="radLG" value="LG">
+                        <label for="radLG" class="pr-3">LG</label>
+                        <input type="radio" name="radSize" id="radXL" value="XL">
+                        <label for="radXL" class="pr-3">XL</label>                        
                         <hr>
-                        <h3 class="title"></h3>
-                        <h3>Enter Quantity: </h3>
-                        <input type="number" name="txtQuantity" placeholder="0" class="form-control" min="1" max="100" required>
+                        <h3 class="title">Enter Quantity:</h3>
+                        <input type="number" name="txtQuantity" id="txtQuantity" class="form-control" placeholder="0" min="1" max="100" required>
                         <br>
                         <button type="submit" name="btnProcess" class="btn btn-dark btn-lg"><i class="fa fa-check-circle"></i> Confirm Product Purchase</button>
-                        <a href="index.php" class="btn btn-danger btn-lg"><i class="fa fa-left-arrow"></i> Cancel /Go Back</a>
-                    </div>
-                </div>
-            <?php endif; ?>
+                        <a href="index.php" class="btn btn-danger btn-lg"><i class="fa fa-arrow-left"></i> Cancel / Go Back</a>
+                    </div>                                
+            </div>
         </div>
     </form>
 
-   </div> 
-   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.1/jquery.min.js" integrity="sha512-aVKKRRi/Q/YV+4mjoKBsE4x3H+BkegoM/em46NNlCqNTmUYADjBbeNefNxYV7giUp0VxICtqdrbqU7iVaeZNXA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-   <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-Fy6S3B9q64WdZWQUiU+q4/2Lc9npb8tCaSX9FK7E8HnRr0Jz8D6OP9dO5Vg3Q9ct" crossorigin="anonymous"></script>
-   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" integrity="sha512-xh6O/CkQoPOWDdYTDqeRdPCVd1SpvCA9XXcUnZS2FmJNp1coAFzvtCN9BmamE+4aHK8yyUHUSCcJHgXloTyT2A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-</body>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.0/js/bootstrap.bundle.min.js" integrity="sha512-wV7Yj1alIZDqZFCUQJy85VN+qvEIly93fIQAN7iqDFCPEucLCeNFz4r35FCo9s6WrpdDQPi80xbljXB8Bjtvcg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 </body>
 </html>
